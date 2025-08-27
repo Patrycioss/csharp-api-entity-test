@@ -1,12 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace workshop.wwwapi.Models
 {
-    //TODO: decorate class/columns accordingly    
+    [Table("patients")]
     public class Patient
-    {        
-        public int Id { get; set; }        
+    {   
+        [Column("id", TypeName = "int")]
+        public int Id { get; set; }
+        
+        [Column("name", TypeName = "varchar(100)")]
         public string FullName { get; set; }
+
+        public Patient(string fullName)
+        {
+            FullName = fullName;
+        }
     }
 }
