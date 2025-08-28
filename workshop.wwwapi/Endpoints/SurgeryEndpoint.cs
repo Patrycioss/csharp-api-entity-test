@@ -47,9 +47,7 @@ namespace workshop.wwwapi.Endpoints
         [ProducesResponseType(StatusCodes.Status201Created)]
         public static async Task<IResult> CreatePatient(IRepository repository, PatientPut patientPut)
         {
-            var patient = patientPut.ToPatient();
-            patient.Id = repository.CreatePatientId();
-            await repository.CreatePatient(patient);
+            var patient = await repository.CreatePatient(patientPut.ToPatient());
             return TypedResults.Created("/patients/create", PatientPost.FromPatient(patient));
         }
         
