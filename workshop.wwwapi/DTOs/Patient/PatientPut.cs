@@ -6,6 +6,6 @@ public class PatientPut
 
     public Models.Patient ToPatient()
     {
-        return new Models.Patient(){FullName = FullName};
+        return new Models.Patient {FullName = FullName, Appointments = []};
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using workshop.wwwapi.DTOs.Appointment;
 using workshop.wwwapi.DTOs.Patient;
 using workshop.wwwapi.Repository;
 
@@ -46,18 +47,31 @@ namespace workshop.wwwapi.Endpoints
             await repository.CreatePatient(patient);
             return TypedResults.Created("/patients/create", PatientPost.FromPatient(patient));
         }
-
-
+        
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public static async Task<IResult> GetDoctors(IRepository repository)
         {
-            return TypedResults.Ok(await repository.GetPatients());
+            var doctors = (await repository.GetDoctors()).ToList();
+            if (doctors.Count == 0)
+            {
+                return TypedResults.NotFound();
+            }
+            return TypedResults.Ok(doctors);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public static async Task<IResult> GetAppointmentsByDoctor(IRepository repository, int id)
         {
-            return TypedResults.Ok(await repository.GetAppointmentsByDoctor(id));
+            var appointments = (await repository.GetAppointmentsByDoctor(id)).ToList();
+
+            if (appointments.Count == 0)
+            {
+                return TypedResults.NotFound();
+            }
+            
+            return TypedResults.Ok(appointments.Select(AppointmentPost.FromAppointment));
         }
     }
 }
