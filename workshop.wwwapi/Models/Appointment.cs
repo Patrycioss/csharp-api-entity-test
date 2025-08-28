@@ -2,26 +2,21 @@
 
 namespace workshop.wwwapi.Models
 {
-    [Table("appointments")]
     public class Appointment
     {
-        [Column("id", TypeName = "int")]
-        public int Id { get; set; }
-
-        [Column("booking", TypeName = "date")]
+        [Column("booking", TypeName = "timestamp without time zone")]
         public DateTime Booking { get; set; }
 
-        [Column("doctor_id_fk", TypeName = "serial")]
+        [Column("doctor_id_fk", TypeName = "int")]
         public int DoctorId { get; set; }
+        
+        [Column("doctor")]
+        public Doctor Doctor { get; set; }
 
-        [Column("patient_id_fk", TypeName = "serial")]
+        [Column("patient_id_fk", TypeName = "int")]
         public int PatientId { get; set; }
-
-        public Appointment(DateTime booking, int doctorId, int patientId)
-        {
-            Booking = booking;
-            DoctorId = doctorId;
-            PatientId = patientId;
-        }
+        
+        [Column("patient")]
+        public Patient Patient { get; set; }
     }
 }

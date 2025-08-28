@@ -17,8 +17,26 @@ namespace workshop.wwwapi.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Setup tables
+            modelBuilder.Entity<Doctor>().ToTable("doctors");
+            modelBuilder.Entity<Patient>().ToTable("patients");
+            modelBuilder.Entity<Appointment>().ToTable("appointments");
+            
+            // Setup keys
+            modelBuilder.Entity<Appointment>()
+                .HasKey(appointment => new { appointment.DoctorId, appointment.PatientId });
+            
+            // Setup relations
+            modelBuilder.Entity<Doctor>().HasMany(doctor => doctor.Appointments)
+                .WithOne(appointment => appointment.Doctor)
+                .HasForeignKey(doctor => doctor.DoctorId);
+            
+            modelBuilder.Entity<Patient>().HasMany(patient => patient.Appointments)
+                .WithOne(appointment => appointment.Patient)
+                .HasForeignKey(patient => patient.PatientId);
+            
+            // Setup seed
             var seeder = new Seeder();
-
             modelBuilder.Entity<Doctor>().HasData(seeder.Doctors);
             modelBuilder.Entity<Patient>().HasData(seeder.Patients);
             modelBuilder.Entity<Appointment>().HasData(seeder.Appointments);

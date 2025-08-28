@@ -1,9 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace workshop.wwwapi.Models
 {
-    [Table("doctors")]
     public class Doctor
     {    
         [Column("id", TypeName = "int")]
@@ -11,10 +9,8 @@ namespace workshop.wwwapi.Models
         
         [Column("name", TypeName = "varchar(100)")]
         public string FullName { get; set; }
-
-        public Doctor(string fullName)
-        {
-            FullName = fullName;
-        }
+        
+        [Column("appointments")]
+        public ICollection<Appointment> Appointments { get; set; }
     }
 }

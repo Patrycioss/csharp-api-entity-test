@@ -1,9 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace workshop.wwwapi.Models
 {
-    [Table("patients")]
     public class Patient
     {   
         [Column("id", TypeName = "int")]
@@ -11,10 +10,8 @@ namespace workshop.wwwapi.Models
         
         [Column("name", TypeName = "varchar(100)")]
         public string FullName { get; set; }
-
-        public Patient(string fullName)
-        {
-            FullName = fullName;
-        }
+        
+        [Column("appointments")]
+        public ICollection<Appointment> Appointments { get; set; }
     }
 }

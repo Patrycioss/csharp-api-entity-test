@@ -13,7 +13,11 @@ builder.Services.AddDbContext<DatabaseContext>();
 builder.Services.AddScoped<IRepository,Repository>();
 var app = builder.Build();
 
-using (var dbContext = new DatabaseContext(new DbContextOptions<DatabaseContext>()))
+DbContextOptionsBuilder<DatabaseContext> dbOptionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
+
+dbOptionsBuilder.EnableSensitiveDataLogging(true);
+
+using (var dbContext = new DatabaseContext(dbOptionsBuilder.Options))
 {
     dbContext.Database.EnsureCreated();
 }
