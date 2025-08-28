@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using workshop.wwwapi.DTOs.Appointment;
+using workshop.wwwapi.DTOs.Doctor;
 using workshop.wwwapi.DTOs.Patient;
 using workshop.wwwapi.Repository;
 
@@ -14,7 +15,11 @@ namespace workshop.wwwapi.Endpoints
             surgeryGroup.MapGet("/patients", GetPatients);
             surgeryGroup.MapGet("/patients/{id:int}", GetPatient);
             surgeryGroup.MapPut("/patients/create", CreatePatient);
+            
             surgeryGroup.MapGet("/doctors", GetDoctors);
+            surgeryGroup.MapGet("/doctors/{id:int}", GetDoctor);
+            surgeryGroup.MapPut("/doctors/create", CreateDoctor);
+            
             surgeryGroup.MapGet("/appointmentsbydoctor/{id:int}", GetAppointmentsByDoctor);
         }
 
@@ -57,7 +62,26 @@ namespace workshop.wwwapi.Endpoints
             {
                 return TypedResults.NotFound();
             }
-            return TypedResults.Ok(doctors);
+            return TypedResults.Ok(doctors.Select(DoctorPost.FromDoctor));
+        }
+        
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public static async Task<IResult> GetDoctor(IRepository repository, int id)
+        {
+            var doctor = await repository.GetDoctor(id);
+            if (doctor == null)
+            {
+                return TypedResults.NotFound();
+            }
+            return TypedResults.Ok(DoctorPost.FromDoctor(doctor));
+        }
+        
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public static async Task<IResult> CreateDoctor(IRepository repository, DoctorPut doctorPut)
+        {
+            var doctor = await repository.CreateDoctor(doctorPut.ToDoctor());
+            return TypedResults.Created("/doctors/create", DoctorPost.FromDoctor(doctor));
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
