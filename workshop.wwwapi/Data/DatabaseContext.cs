@@ -24,7 +24,7 @@ namespace workshop.wwwapi.Data
             
             // Setup keys
             modelBuilder.Entity<Appointment>()
-                .HasKey(appointment => new { appointment.DoctorId, appointment.PatientId });
+                .HasKey(appointment => new { appointment.DoctorId, appointment.PatientId } );
             
             // Setup relations
             modelBuilder.Entity<Doctor>().HasMany(doctor => doctor.Appointments)

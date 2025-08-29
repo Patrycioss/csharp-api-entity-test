@@ -25,25 +25,25 @@ public class Seeder
         Appointments.AddRange([
             new Appointment()
             {
-                Booking = new DateTime(2025, 3, 20, 16, 15, 0),
+                Booking = new DateTime(2025, 3, 20, 16, 15, 0).ToUniversalTime(),
                 DoctorId = Doctors[0].Id,
                 PatientId = Patients[0].Id,
             },
             new Appointment()
             {
-                Booking = new DateTime(200, 3, 20, 4, 15, 0),
+                Booking = new DateTime(200, 3, 20, 4, 15, 0).ToUniversalTime(),
                 DoctorId = Doctors[1].Id,
                 PatientId = Patients[0].Id,
             },
             new Appointment()
             {
-                Booking = new DateTime(2023, 3, 20, 16, 15, 0),
+                Booking = new DateTime(2023, 3, 20, 16, 15, 0).ToUniversalTime(),
                 DoctorId = Doctors[2].Id,
                 PatientId = Patients[1].Id,
             },
             new Appointment()
             {
-                Booking = new DateTime(2000, 3, 20, 16, 15, 0),
+                Booking = new DateTime(2000, 3, 20, 16, 15, 0).ToUniversalTime(),
                 DoctorId = Doctors[1].Id,
                 PatientId = Patients[2].Id,
             }

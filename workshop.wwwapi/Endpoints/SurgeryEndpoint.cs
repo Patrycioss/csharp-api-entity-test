@@ -20,7 +20,11 @@ namespace workshop.wwwapi.Endpoints
             surgeryGroup.MapGet("/doctors/{id:int}", GetDoctor);
             surgeryGroup.MapPut("/doctors/create", CreateDoctor);
             
+            surgeryGroup.MapGet("/appointments", GetAppointments);
+            surgeryGroup.MapGet("/appointments/{doctorId:int}/{patientId:int}", GetAppointment);
             surgeryGroup.MapGet("/appointmentsbydoctor/{id:int}", GetAppointmentsByDoctor);
+            surgeryGroup.MapGet("/appointmentsbypatient/{id:int}", GetAppointmentsByPatient);
+            surgeryGroup.MapPut("/appointments/create", CreateAppointment);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -81,6 +85,30 @@ namespace workshop.wwwapi.Endpoints
             var doctor = await repository.CreateDoctor(doctorPut.ToDoctor());
             return TypedResults.Created("/doctors/create", DoctorPost.FromDoctor(doctor));
         }
+        
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public static async Task<IResult> GetAppointments(IRepository repository)
+        {
+            var appointments = (await repository.GetAppointments()).ToList();
+            if (appointments.Count == 0)
+            {
+                return TypedResults.NotFound();
+            }
+            return TypedResults.Ok(appointments.Select(AppointmentPost.FromAppointment));
+        }
+        
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public static async Task<IResult> GetAppointment(IRepository repository, int doctorId, int patientId)
+        {
+            var appointment = await repository.GetAppointment(doctorId, patientId);
+            if (appointment == null)
+            {
+                return TypedResults.NotFound();
+            }
+            return TypedResults.Ok(AppointmentPost.FromAppointment(appointment));
+        }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -94,6 +122,27 @@ namespace workshop.wwwapi.Endpoints
             }
             
             return TypedResults.Ok(appointments.Select(AppointmentPost.FromAppointment));
+        }
+        
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public static async Task<IResult> GetAppointmentsByPatient(IRepository repository, int id)
+        {
+            var appointments = (await repository.GetAppointmentsByPatient(id)).ToList();
+
+            if (appointments.Count == 0)
+            {
+                return TypedResults.NotFound();
+            }
+            
+            return TypedResults.Ok(appointments.Select(AppointmentPost.FromAppointment));
+        }
+        
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public static async Task<IResult> CreateAppointment(IRepository repository, AppointmentPut appointmentPut)
+        {
+            var appointment = await repository.CreateAppointment(appointmentPut.ToAppointment());
+            return TypedResults.Created("/appointments/create", AppointmentPost.FromAppointment(appointment));
         }
     }
 }

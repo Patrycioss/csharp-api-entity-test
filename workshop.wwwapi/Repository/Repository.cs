@@ -59,6 +59,22 @@ namespace workshop.wwwapi.Repository
             return doctor;
         }
 
+        public async Task<IEnumerable<Appointment>> GetAppointments()
+        {
+            return await _databaseContext.Appointments
+                .Include(appointment => appointment.Patient)
+                .Include(appointment => appointment.Doctor)
+                .ToListAsync();
+        }
+
+        public async Task<Appointment?> GetAppointment(int doctorId, int patientId)
+        {
+            return await _databaseContext.Appointments
+                .Include(appointment => appointment.Doctor)
+                .Include(appointment => appointment.Patient)
+                .FirstAsync(appointment => appointment.DoctorId == doctorId && appointment.PatientId == patientId);
+        }
+
         public async Task<IEnumerable<Appointment>> GetAppointmentsByDoctor(int id)
         {
             return await _databaseContext.Appointments
@@ -68,9 +84,20 @@ namespace workshop.wwwapi.Repository
                 .ToListAsync();
         }
 
-        public int CreatePatientId()
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByPatient(int id)
         {
-            return _databaseContext.Patients.Max(patient => patient.Id) + 1;
+            return await _databaseContext.Appointments
+                .Where(a => a.PatientId == id)
+                .Include(appointment => appointment.Patient)
+                .Include(appointment => appointment.Doctor)
+                .ToListAsync();
+        }
+
+        public async Task<Appointment> CreateAppointment(Appointment appointment)
+        {
+            await _databaseContext.Appointments.AddAsync(appointment);
+            await _databaseContext.SaveChangesAsync();
+            return appointment;
         }
     }
 }

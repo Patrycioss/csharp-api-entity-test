@@ -4,7 +4,10 @@ namespace workshop.wwwapi.Models
 {
     public class Appointment
     {
-        [Column("booking", TypeName = "timestamp without time zone")]
+        [Column("id")]
+        public int Id { get; set; } 
+        
+        [Column("booking", TypeName = "timestamp with time zone")]
         public DateTime Booking { get; set; }
 
         [Column("doctor_id_fk", TypeName = "int")]
