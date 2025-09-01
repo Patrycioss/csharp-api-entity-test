@@ -18,10 +18,6 @@ namespace workshop.wwwapi.Data
             modelBuilder.Entity<Patient>().ToTable("patients");
             modelBuilder.Entity<Appointment>().ToTable("appointments");
             
-            // Setup keys
-            modelBuilder.Entity<Appointment>()
-                .HasKey(appointment => new { appointment.DoctorId, appointment.PatientId } );
-            
             // Setup relations
             modelBuilder.Entity<Doctor>().HasMany(doctor => doctor.Appointments)
                 .WithOne(appointment => appointment.Doctor)
@@ -40,6 +36,10 @@ namespace workshop.wwwapi.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            var connectionString = configuration.GetValue<string>("ConnectionStrings:DefaultConnection")!;
+            optionsBuilder.UseNpgsql(connectionString);
+            optionsBuilder.LogTo(message => Debug.WriteLine(message));
         }
 
         public DbSet<Patient> Patients { get; set; }

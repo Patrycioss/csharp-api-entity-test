@@ -1,4 +1,6 @@
-using Microsoft.AspNetCore.Mvc.Testing;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using workshop.wwwapi.Data;
@@ -7,7 +9,7 @@ using workshop.wwwapi.Repository;
 
 namespace workshop.tests;
 
-public class Tests
+public class RepositoryTests
 {
     private Seeder _seeder;
 
@@ -16,26 +18,12 @@ public class Tests
     {
         _seeder = new Seeder();
     }
-    
-    [Test]
-    public async Task PatientEndpointStatus()
-    {
-        // Arrange
-        var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(_ => { });
-        var client = factory.CreateClient();
-
-        // Act
-        var response = await client.GetAsync("/patients");
-
-        // Assert
-        Assert.That(response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
-    }
 
     [Test]
     public async Task GetPatientsTest()
     {
         // Arrange
-        var repository = new Repository(CreateNewContext());
+        var repository = new Repository(TestUtils.CreateNewContext());
         var expected = _seeder.Patients;
 
         // Act
@@ -54,7 +42,7 @@ public class Tests
     public async Task GetPatientTest()
     {
         // Arrange
-        var repository = new Repository(CreateNewContext());
+        var repository = new Repository(TestUtils.CreateNewContext());
         var expected = _seeder.Patients[0];
 
         // Act
@@ -69,7 +57,7 @@ public class Tests
     public async Task CreatePatientTest()
     {
         // Arrange
-        var repository = new Repository(CreateNewContext());
+        var repository = new Repository(TestUtils.CreateNewContext());
         
         var expected = new Patient()
         {
@@ -92,7 +80,7 @@ public class Tests
     public async Task GetDoctorsTest()
     {
         // Arrange
-        var repository = new Repository(CreateNewContext());
+        var repository = new Repository(TestUtils.CreateNewContext());
         var expected = _seeder.Doctors;
 
         // Act
@@ -111,7 +99,7 @@ public class Tests
     public async Task GetDoctorTest()
     {
         // Arrange
-        var repository = new Repository(CreateNewContext());
+        var repository = new Repository(TestUtils.CreateNewContext());
         var expected = _seeder.Doctors[0];
 
         // Act
@@ -126,7 +114,7 @@ public class Tests
     public async Task CreateDoctorTest()
     {
         // Arrange
-        var repository = new Repository(CreateNewContext());
+        var repository = new Repository(TestUtils.CreateNewContext());
         var expected = new Doctor()
         {
             FullName = "New Test Doctor",
@@ -148,7 +136,7 @@ public class Tests
     public async Task GetAppointmentsTest()
     {
         // Arrange
-        var repository = new Repository(CreateNewContext());
+        var repository = new Repository(TestUtils.CreateNewContext());
         var expected = _seeder.Appointments;
 
         // Act
@@ -167,7 +155,7 @@ public class Tests
     public async Task GetAppointmentTest()
     {
         // Arrange
-        var repository = new Repository(CreateNewContext());
+        var repository = new Repository(TestUtils.CreateNewContext());
         var expected = new Appointment()
         {
             Id = 1,
@@ -191,7 +179,7 @@ public class Tests
     public async Task GetAppointmentsByDoctorTest()
     {
         // Arrange
-        var repository = new Repository(CreateNewContext());
+        var repository = new Repository(TestUtils.CreateNewContext());
         var expected = new List<Appointment>()
         {
             new() { Id = 1, DoctorId = 1, },
@@ -213,7 +201,7 @@ public class Tests
     public async Task GetAppointmentsByPatientTest()
     {
         // Arrange
-        var repository = new Repository(CreateNewContext());
+        var repository = new Repository(TestUtils.CreateNewContext());
         var expected = new List<Appointment>()
         {
             new() { Id = 1, PatientId = 1, },
@@ -235,7 +223,7 @@ public class Tests
     public async Task CreateAppointmentTest()
     {
         // Arrange
-        var repository = new Repository(CreateNewContext());
+        var repository = new Repository(TestUtils.CreateNewContext());
         var expected = new Appointment()
         {
             DoctorId = 3,
@@ -258,11 +246,5 @@ public class Tests
         });
     }
 
-    private static DatabaseContext CreateNewContext()
-    {
-        return new DatabaseContext(new DbContextOptionsBuilder<DatabaseContext>().UseInMemoryDatabase(Guid.NewGuid().ToString())
-            // don't raise the error warning us that the in memory db doesn't support transactions
-            .ConfigureWarnings(x => x.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options);
-    }
+   
 }
