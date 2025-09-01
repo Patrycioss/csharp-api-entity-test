@@ -6,16 +6,16 @@ namespace workshop.wwwapi.Repository
 {
     public class Repository : IRepository
     {
-        private readonly DatabaseContext _databaseContext;
+        private readonly DatabaseContext _db;
 
         public Repository(DatabaseContext db)
         {
-            _databaseContext = db;
+            _db = db;
         }
 
         public async Task<IEnumerable<Patient>> GetPatients()
         {
-            return await _databaseContext.Patients
+            return await _db.Patients
                 .Include(patient => patient.Appointments)
                 .ThenInclude(appointment => appointment.Doctor)
                 .ToListAsync();
@@ -23,7 +23,7 @@ namespace workshop.wwwapi.Repository
 
         public async Task<Patient?> GetPatient(int id)
         {
-            return await _databaseContext.Patients
+            return await _db.Patients
                 .Include(patient => patient.Appointments)
                 .ThenInclude(appointment => appointment.Doctor)
                 .FirstAsync(patient => patient.Id == id);
@@ -31,14 +31,14 @@ namespace workshop.wwwapi.Repository
 
         public async Task<Patient> CreatePatient(Patient patient)
         {
-            await _databaseContext.Patients.AddAsync(patient);
-            await _databaseContext.SaveChangesAsync();
+            await _db.Patients.AddAsync(patient);
+            await _db.SaveChangesAsync();
             return patient;
         }
 
         public async Task<IEnumerable<Doctor>> GetDoctors()
         {
-            return await _databaseContext.Doctors
+            return await _db.Doctors
                 .Include(doctor => doctor.Appointments)
                 .ThenInclude(appointment => appointment.Patient)
                 .ToListAsync();
@@ -46,7 +46,7 @@ namespace workshop.wwwapi.Repository
 
         public async Task<Doctor?> GetDoctor(int id)
         {
-            return await _databaseContext.Doctors
+            return await _db.Doctors
                 .Include(doctor => doctor.Appointments)
                 .ThenInclude(appointment => appointment.Patient)
                 .FirstAsync(doctor => doctor.Id == id);
@@ -54,30 +54,30 @@ namespace workshop.wwwapi.Repository
 
         public async Task<Doctor> CreateDoctor(Doctor doctor)
         {
-            await _databaseContext.Doctors.AddAsync(doctor);
-            await _databaseContext.SaveChangesAsync();
+            await _db.Doctors.AddAsync(doctor);
+            await _db.SaveChangesAsync();
             return doctor;
         }
 
         public async Task<IEnumerable<Appointment>> GetAppointments()
         {
-            return await _databaseContext.Appointments
+            return await _db.Appointments
                 .Include(appointment => appointment.Patient)
                 .Include(appointment => appointment.Doctor)
                 .ToListAsync();
         }
 
-        public async Task<Appointment?> GetAppointment(int doctorId, int patientId)
+        public async Task<Appointment?> GetAppointment(int id)
         {
-            return await _databaseContext.Appointments
+            return await _db.Appointments
                 .Include(appointment => appointment.Doctor)
                 .Include(appointment => appointment.Patient)
-                .FirstAsync(appointment => appointment.DoctorId == doctorId && appointment.PatientId == patientId);
+                .FirstAsync(appointment => appointment.Id == id);
         }
 
         public async Task<IEnumerable<Appointment>> GetAppointmentsByDoctor(int id)
         {
-            return await _databaseContext.Appointments
+            return await _db.Appointments
                 .Where(a => a.DoctorId == id)
                 .Include(appointment => appointment.Patient)
                 .Include(appointment => appointment.Doctor)
@@ -86,7 +86,7 @@ namespace workshop.wwwapi.Repository
 
         public async Task<IEnumerable<Appointment>> GetAppointmentsByPatient(int id)
         {
-            return await _databaseContext.Appointments
+            return await _db.Appointments
                 .Where(a => a.PatientId == id)
                 .Include(appointment => appointment.Patient)
                 .Include(appointment => appointment.Doctor)
@@ -95,8 +95,8 @@ namespace workshop.wwwapi.Repository
 
         public async Task<Appointment> CreateAppointment(Appointment appointment)
         {
-            await _databaseContext.Appointments.AddAsync(appointment);
-            await _databaseContext.SaveChangesAsync();
+            await _db.Appointments.AddAsync(appointment);
+            await _db.SaveChangesAsync();
             return appointment;
         }
     }

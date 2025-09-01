@@ -6,12 +6,8 @@ namespace workshop.wwwapi.Data
 {
     public sealed class DatabaseContext : DbContext
     {
-        private readonly string _connectionString;
-
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
-            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            _connectionString = configuration.GetValue<string>("ConnectionStrings:DefaultConnection")!;
             Database.EnsureCreated();
         }
 
@@ -44,9 +40,6 @@ namespace workshop.wwwapi.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseInMemoryDatabase(databaseName: "Database");
-            optionsBuilder.UseNpgsql(_connectionString);
-            optionsBuilder.LogTo(message => Debug.WriteLine(message)); //see the sql EF using in the console
         }
 
         public DbSet<Patient> Patients { get; set; }

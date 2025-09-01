@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using workshop.wwwapi.Data;
 using workshop.wwwapi.Endpoints;
@@ -9,18 +10,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<DatabaseContext>();
+builder.Services.AddDbContext<DatabaseContext>(options =>
+    {
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+        var connectionString = configuration.GetValue<string>("ConnectionStrings:DefaultConnection")!;
+        options.UseNpgsql(connectionString);
+        options.LogTo(message => Debug.WriteLine(message));
+    }
+    );
 builder.Services.AddScoped<IRepository,Repository>();
+
 var app = builder.Build();
 
-DbContextOptionsBuilder<DatabaseContext> dbOptionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-
-dbOptionsBuilder.EnableSensitiveDataLogging(true);
-
-using (var dbContext = new DatabaseContext(dbOptionsBuilder.Options))
-{
-    dbContext.Database.EnsureCreated();
-}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

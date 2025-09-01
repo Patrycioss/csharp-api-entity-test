@@ -21,7 +21,7 @@ namespace workshop.wwwapi.Endpoints
             surgeryGroup.MapPut("/doctors/create", CreateDoctor);
             
             surgeryGroup.MapGet("/appointments", GetAppointments);
-            surgeryGroup.MapGet("/appointments/{doctorId:int}/{patientId:int}", GetAppointment);
+            surgeryGroup.MapGet("/appointments/{id:int}", GetAppointment);
             surgeryGroup.MapGet("/appointmentsbydoctor/{id:int}", GetAppointmentsByDoctor);
             surgeryGroup.MapGet("/appointmentsbypatient/{id:int}", GetAppointmentsByPatient);
             surgeryGroup.MapPut("/appointments/create", CreateAppointment);
@@ -100,9 +100,9 @@ namespace workshop.wwwapi.Endpoints
         
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public static async Task<IResult> GetAppointment(IRepository repository, int doctorId, int patientId)
+        public static async Task<IResult> GetAppointment(IRepository repository, int id)
         {
-            var appointment = await repository.GetAppointment(doctorId, patientId);
+            var appointment = await repository.GetAppointment(id);
             if (appointment == null)
             {
                 return TypedResults.NotFound();
